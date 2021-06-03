@@ -31,3 +31,31 @@ def random9_9move(board):
             moveSuccesful=True
 
     return newBoard
+
+def rules(board, lastTurnColor):
+    if didColorWin(board, lastTurnColor):
+        return lastTurnColor
+    if didColorWin(board, lastTurnColor == 1 ? 2 : 1):
+        return lastTurnColor
+    return
+
+def didColorWin(board, color):
+    groups = identifyGroups(color == 1 ? 2 : 1)
+    
+    for g in groups:
+        if len(g[1]) = 0:
+            return True
+
+    return False
+
+def identifyGroups(board, color):
+    groups = {}
+    checkedIntersections = {}
+    for col in range(len(board)):
+        for row in range(len(col)):
+            if board[col][row] == color && not ((col, row) in checkedIntersections)):
+                #finish from paper later
+
+                
+                
+def returnAdjacentCoords(board
