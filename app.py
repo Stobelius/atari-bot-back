@@ -9,14 +9,24 @@ app = Flask(__name__)
 CORS(app)
 
 @app.route("/test", methods=['POST'])
-def hello_world():
+def main():
     data=json.loads(request.data)
     board = data["board"]
     print(data["test"])
-    rules(board, 1)
+    winner=rules(board, 1)  
+    if winner!=0:
+        return jsonify({
+            "board": board,
+            "winner": winner
+        })
+
     newBoard=makeMove(board)
-    rules(board, 2)
-    return jsonify({"board": newBoard})
+    winner=rules(board, 2)
+
+    return jsonify({
+        "board": newBoard,
+        "winner": winner
+    })
 
 def makeMove(board):
     newboard=random9_9move(board)
@@ -40,28 +50,48 @@ def rules(board, lastTurnColor):
     if didColorWin(board, lastTurnColor):
         return lastTurnColor
     if didColorWin(board, 2 if lastTurnColor == 1 else 1):
-        return lastTurnColor
-    return
+        return 2 if lastTurnColor == 1 else 1
+    return 0
 
 def didColorWin(board, color):
     groups = identifyGroups(board, 2 if color == 1 else 1)
 
-    print(str(groups))
     
-    #for g in groups:
-    #    if len(g[1]) == 0:
-    #        return True
+    for g in groups:
+        if len(g[1]) == 0:
+            print("winner is "+str(color))
+            return True
+            
 
     return False
 
 def identifyGroups(board, color):
-    groups = set()
+    groups = []
+    groupsAndLiberties = []
     iteratedBoard = copy.deepcopy(board)
     #print("this is the board" + str(board))
     for col in range(len(board)):
         for row in range(len(board[col])):
             if iteratedBoard[col][row] == color:
-                groups.add(floodFill(col, row, iteratedBoard, color))
+                groups.append(floodFill(col, row, iteratedBoard, color))
+
+    for group in groups:
+        groupsAndLiberties.append((group,returnLibertiesSet(group,board)))
+
+    return groupsAndLiberties
+
+def returnLibertiesSet(group, board):
+    libertySet = set()
+    returnSet = set()
+
+    for tuple in group:
+        libertySet=libertySet.union(libertySet,returnAdjacentCoords(tuple[0], tuple[1]))
+
+    for tuple in libertySet:
+        if board[tuple[0]][tuple[1]]==0:
+            returnSet.add(tuple)
+
+    return returnSet        
 
 def floodFill(col, row, iteratedBoard, color):
     group = set()
@@ -73,17 +103,17 @@ def floodFill(col, row, iteratedBoard, color):
         group.add((col, row))
         iteratedBoard[col][row] = 3
 
-        adjacentIntersections = returnAdjacentCoords(col, row, iteratedBoard)
+        adjacentIntersections = returnAdjacentCoords(col, row)
         for i in adjacentIntersections:
             floodFillHelper(i[0], i[1], iteratedBoard, color)
 
     floodFillHelper(col, row, iteratedBoard, color)
 
-    if len(group):
-        print(group)
-    return
+    #if len(group):
+        #print(group)
+    return group
                 
-def returnAdjacentCoords(col, row, board):
+def returnAdjacentCoords(col, row):
     returnSet = set()
     if row < 8:
         returnSet.add((col, row + 1))
