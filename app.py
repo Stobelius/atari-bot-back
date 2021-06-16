@@ -13,6 +13,7 @@ def main():
     data=json.loads(request.data)
     board = data["board"]
     print(data["test"])
+    opponent=data["opponent"]
     winner=rules(board, 1)  
     if winner!=0:
         return jsonify({
@@ -20,7 +21,7 @@ def main():
             "winner": winner
         })
 
-    newBoard=makeMove(board)
+    newBoard=makeMove(board, opponent)
     winner=rules(board, 2)
 
     return jsonify({
@@ -28,11 +29,57 @@ def main():
         "winner": winner
     })
 
-def makeMove(board):
-    newboard=random9_9move(board)
-    return newboard
+def makeMove(board,opponent):
+    if opponent=="basic":
+        newBoard=basic9_9(board)
+        return newBoard
 
-def random9_9move(board):
+
+    if opponent=="random":
+        newBoard=random9_9(board)
+        return newBoard
+    
+    print("request missing opponent")
+    raise Exception("request missing opponent")
+    return board
+
+def basic9_9(board):
+    time.sleep(1)
+    
+    
+    opposingGroups=identifyGroups(board,1)
+    # break if no groups. fix this when fix coloring
+    
+    # find moves that minimise opponent liberties
+    libertyCount=1000000
+    groupWithLeastLiberties=opposingGroups[0]
+    for group in opposingGroups:
+        if len(group[1])<libertyCount:
+            groupWithLeastLiberties=group
+            libertyCount=len(group[1])
+    
+
+    # prefer moves that maximise own liberties
+    liberties=groupWithLeastLiberties[1]
+    potentialMoveLibertyCount=-1
+    newMove=(0,0)
+
+    for tuple in liberties:
+        potentialBoard=copy.deepcopy(board)
+        potentialBoard[tuple[0]][tuple[1]]=2
+        potentialGroup=floodFill(tuple[0],tuple[1],potentialBoard,2)
+        potentialLibertySet=returnLibertiesSet(potentialGroup,potentialBoard)
+        if len(potentialLibertySet)>potentialMoveLibertyCount:
+            potentialMoveLibertyCount=len(potentialLibertySet)
+            newMove=tuple
+    
+    board[newMove[0]][newMove[1]]=2
+    
+    return board
+
+
+
+def random9_9(board):
     time.sleep(1)
     
     newBoard=board
