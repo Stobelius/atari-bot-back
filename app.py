@@ -14,40 +14,42 @@ def main():
     board = data["board"]
     print(data["test"])
     opponent=data["opponent"]
-    winner=rules(board, 1)  
+    turnColor=data["turnColor"]
+    winner=rules(board, 2 if turnColor == 1 else 1)  
     if winner!=0:
         return jsonify({
             "board": board,
             "winner": winner
         })
 
-    newBoard=makeMove(board, opponent)
-    winner=rules(board, 2)
+    newBoard=makeMove(board, opponent,turnColor)
+    winner=rules(board, turnColor)
 
     return jsonify({
         "board": newBoard,
         "winner": winner
     })
 
-def makeMove(board,opponent):
+def makeMove(board,opponent,turnColor):
     if opponent=="basic":
-        newBoard=basic9_9(board)
+        newBoard=basic9_9(board, turnColor)
         return newBoard
 
 
     if opponent=="random":
-        newBoard=random9_9(board)
+        newBoard=random9_9(board,turnColor)
         return newBoard
     
     print("request missing opponent")
     raise Exception("request missing opponent")
     return board
 
-def basic9_9(board):
+def basic9_9(board,turnColor):
     time.sleep(1)
+
+    opponentColor=2 if turnColor == 1 else 1
     
-    
-    opposingGroups=identifyGroups(board,1)
+    opposingGroups=identifyGroups(board,opponentColor)
     # break if no groups. fix this when fix coloring
     
     # find moves that minimise opponent liberties
@@ -66,20 +68,20 @@ def basic9_9(board):
 
     for tuple in liberties:
         potentialBoard=copy.deepcopy(board)
-        potentialBoard[tuple[0]][tuple[1]]=2
-        potentialGroup=floodFill(tuple[0],tuple[1],potentialBoard,2)
+        potentialBoard[tuple[0]][tuple[1]]=turnColor
+        potentialGroup=floodFill(tuple[0],tuple[1],potentialBoard,turnColor)
         potentialLibertySet=returnLibertiesSet(potentialGroup,potentialBoard)
         if len(potentialLibertySet)>potentialMoveLibertyCount:
             potentialMoveLibertyCount=len(potentialLibertySet)
             newMove=tuple
     
-    board[newMove[0]][newMove[1]]=2
+    board[newMove[0]][newMove[1]]=turnColor
     
     return board
 
 
 
-def random9_9(board):
+def random9_9(board,turnColor):
     time.sleep(1)
     
     newBoard=board
@@ -88,7 +90,7 @@ def random9_9(board):
         col=random.randint(0,8)
         row=random.randint(0,8)
         if(newBoard[col][row] == 0):
-            newBoard[col][row] = 2
+            newBoard[col][row] = turnColor
             moveSuccesful=True
 
     return newBoard
