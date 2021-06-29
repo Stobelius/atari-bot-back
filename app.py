@@ -15,7 +15,6 @@ CORS(app)
 def main():
     data=json.loads(request.data)
     board = data["board"]
-    print(data["test"])
     opponent=data["opponent"]
     turnColor=data["turnColor"]
     winner=rules.rules(board, 2 if turnColor == 1 else 1)  

@@ -1,11 +1,17 @@
 import group_liberty_utilities as utils
 import copy
+import randomAI
 
 def basic9_9(board,turnColor):
     opponentColor=2 if turnColor == 1 else 1
     
     opposingGroups=utils.identifyGroups(board,opponentColor)
-    # break if no groups. fix this when fix coloring
+    
+    if len(opposingGroups)==0:
+        if(board[4][4]==0):
+            board[4][4]=turnColor
+            return board
+        return randomAI.random9_9(board,turnColor)
     
     # find moves that minimise opponent liberties
     libertyCount=1000000
