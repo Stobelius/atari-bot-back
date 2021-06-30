@@ -4,7 +4,7 @@ Lautakoko dynaamisesti front ja back
 Front ymmärtää voiton
 Frontille hae Ai:t
 Backend palauta Ai:t
-Front valitse Ai
+Front valitse Ai. Toggle laudan sivuun.
 Readme
 
 

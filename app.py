@@ -4,7 +4,8 @@ import json
 import time
 import basicAI
 import randomAI
-import rules
+import evalAI
+import group_liberty_utilities as utils
 
 
 
@@ -17,7 +18,7 @@ def main():
     board = data["board"]
     opponent=data["opponent"]
     turnColor=data["turnColor"]
-    winner=rules.rules(board, 2 if turnColor == 1 else 1)  
+    winner=utils.rules(board, 2 if turnColor == 1 else 1)  
     if winner!=0:
         return jsonify({
             "board": board,
@@ -25,7 +26,7 @@ def main():
         })
 
     newBoard=makeMove(board, opponent,turnColor)
-    winner=rules.rules(board, turnColor)
+    winner=utils.rules(board, turnColor)
 
     return jsonify({
         "board": newBoard,
@@ -42,6 +43,10 @@ def makeMove(board,opponent,turnColor):
 
     if opponent=="random":
         newBoard=randomAI.random9_9(board,turnColor)
+        return newBoard
+
+    if opponent=="eval1":
+        newBoard=evalAI.evalAI1_9_9(board,turnColor)
         return newBoard
     
     return board
