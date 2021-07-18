@@ -19,7 +19,7 @@ def evalAI1_9_9(board,turnColor):
                     bestScore = newScore
     
     board[bestCandidate[0]][bestCandidate[1]] = turnColor
-    return board
+    return (board, [bestCandidate[0], bestCandidate[1]])
 
 def evaluation(board, lastColorToPlay):
     boardSize = 9

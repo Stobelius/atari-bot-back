@@ -18,18 +18,27 @@ def main():
     board = data["board"]
     opponent=data["opponent"]
     turnColor=data["turnColor"]
+    record=data["record"]
     winner=utils.rules(board, 2 if turnColor == 1 else 1)  
     if winner!=0:
         return jsonify({
             "board": board,
+            "record": record,
             "winner": winner
         })
 
-    newBoard=makeMove(board, opponent,turnColor)
+    print(record, "recordFromFront")
+
+    (newBoard, newMove)=makeMove(board, opponent,turnColor)
+
+    print("newMove: ", newMove)
+    record.append(newMove)
+    print(record)
     winner=utils.rules(board, turnColor)
 
     return jsonify({
         "board": newBoard,
+        "record": record,
         "winner": winner
     })
 
@@ -43,19 +52,18 @@ def makeMove(board,opponent,turnColor):
     time.sleep(1)
 
     if opponent=="basic":
-        newBoard=basicAI.basic9_9(board, turnColor)
-        return newBoard
-
+        (newBoard, newMove)=basicAI.basic9_9(board, turnColor)
+        return (newBoard, newMove)
 
     if opponent=="random":
-        newBoard=randomAI.random9_9(board,turnColor)
-        return newBoard
+        (newBoard, newMove)=randomAI.random9_9(board,turnColor)
+        return (newBoard, newMove)
 
     if opponent=="eval1":
-        newBoard=evalAI.evalAI1_9_9(board,turnColor)
-        return newBoard
+        (newBoard, newMove)=evalAI.evalAI1_9_9(board,turnColor)
+        return (newBoard, newMove)
     
-    return board
+    return (board, [0, 0])
 
 
 

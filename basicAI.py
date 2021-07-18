@@ -38,4 +38,4 @@ def basic9_9(board,turnColor):
     
     board[newMove[0]][newMove[1]]=turnColor
     
-    return board
+    return (board, [newMove[0], newMove[1]])
