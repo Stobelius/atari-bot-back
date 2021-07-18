@@ -33,6 +33,12 @@ def main():
         "winner": winner
     })
 
+@app.route("/availableai", methods=['GET'])
+def aiRequest():
+    return jsonify({
+        "availableAi": ["basic", "random", "eval1"]
+    })
+
 def makeMove(board,opponent,turnColor):
     time.sleep(1)
 
